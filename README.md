@@ -21,6 +21,7 @@
   1. [Semicolons](#semicolons)
   1. [Type Casting & Coercion](#type-casting--coercion)
   1. [Naming Conventions](#naming-conventions)
+  1. [Use of `this`](#use-of-this)
   1. [Accessors](#accessors)
   1. [Constructors](#constructors)
   1. [Events](#events)
@@ -715,7 +716,7 @@
 
       return this;
     }
-  ```
+    ```
 
 **[⬆ back to top](#table-of-contents)**
 
@@ -1077,7 +1078,105 @@
     this._firstName = 'Panda';
     ```
 
-  - When saving a reference to `this` use `_this`.
+  - Name your functions. This is helpful for stack traces.
+
+    ```javascript
+    // bad
+    var log = function(msg) {
+      console.log(msg);
+    };
+
+    // good
+    var log = function log(msg) {
+      console.log(msg);
+    };
+    ```
+
+  - **Note:** IE8 and below exhibit some quirks with named function expressions.  See [http://kangax.github.io/nfe/](http://kangax.github.io/nfe/) for more info.
+
+**[⬆ back to top](#table-of-contents)**
+
+## Use of `this`
+
+  - Beyond the generally well known use cases of `call` and `apply`, always prefer `.bind(this)` or a functional equivalent, for creating `BoundFunction` definitions for later invocation. Only resort to aliasing when no preferable option is available.
+
+    ```javascript
+    function Device(opts) {
+
+      this.value = null;
+
+      // open an async stream,
+      // this will be called continuously
+      stream.read(opts.path, function(data) {
+
+        // Update this instance's current value
+        // with the most recent value from the
+        // data stream
+        this.value = data;
+
+      }.bind(this));
+
+      // Throttle the frequency of events emitted from
+      // this Device instance
+      setInterval(function() {
+
+        // Emit a throttled event
+        this.emit("event");
+
+      }.bind(this), opts.freq || 100);
+    }
+
+    // Just pretend we've inherited EventEmitter ;)
+
+    ```
+
+  - When unavailable, functional equivalents to `.bind` exist in many modern JavaScript libraries.
+
+    ```javascript
+    // eg. lodash/underscore, _.bind()
+    function Device(opts) {
+
+      this.value = null;
+
+      stream.read(opts.path, _.bind(function(data) {
+        this.value = data;
+      }, this));
+
+      setInterval(_.bind(function() {
+        this.emit("event");
+      }, this), opts.freq || 100);
+    }
+
+    // eg. jQuery.proxy
+    function Device(opts) {
+
+      this.value = null;
+
+      stream.read(opts.path, jQuery.proxy(function(data) {
+        this.value = data;
+      }, this));
+
+      setInterval(jQuery.proxy(function() {
+        this.emit("event");
+      }, this), opts.freq || 100);
+    }
+
+    // eg. dojo.hitch
+    function Device(opts) {
+
+      this.value = null;
+
+      stream.read(opts.path, dojo.hitch(this, function(data) {
+        this.value = data;
+      }));
+
+      setInterval(dojo.hitch(this, function() {
+        this.emit("event");
+      }), opts.freq || 100);
+    }
+    ```
+
+  - As a last resort, when saving a reference to `this` use `_this`.
 
     ```javascript
     // bad
@@ -1105,24 +1204,7 @@
     }
     ```
 
-  - Name your functions. This is helpful for stack traces.
-
-    ```javascript
-    // bad
-    var log = function(msg) {
-      console.log(msg);
-    };
-
-    // good
-    var log = function log(msg) {
-      console.log(msg);
-    };
-    ```
-
-  - **Note:** IE8 and below exhibit some quirks with named function expressions.  See [http://kangax.github.io/nfe/](http://kangax.github.io/nfe/) for more info.
-
 **[⬆ back to top](#table-of-contents)**
-
 
 ## Accessors
 
