@@ -5,6 +5,7 @@
 
 ## Table of Contents
 
+  1. [File Names](#file-names)
   1. [Types](#types)
   1. [Objects](#objects)
   1. [Arrays](#arrays)
@@ -15,7 +16,9 @@
   1. [Hoisting](#hoisting)
   1. [Conditional Expressions & Equality](#conditional-expressions--equality)
   1. [Blocks](#blocks)
-  1. [Comments](#comments)
+  1. [Comments - top level file and class comments](#comments-top-level-file-and-class-comments)
+  1. [Comments - method and property comments](#comments-method-and-property-comments)
+  1. [Comments - inline comments](#comments-inline)
   1. [Whitespace](#whitespace)
   1. [Commas](#commas)
   1. [Semicolons](#semicolons)
@@ -27,6 +30,7 @@
   1. [Events](#events)
   1. [Modules](#modules)
   1. [jQuery](#jquery)
+  1. [Angular](#angular)
   1. [ECMAScript 5 Compatibility](#ecmascript-5-compatibility)
   1. [Testing](#testing)
   1. [Performance](#performance)
@@ -36,6 +40,13 @@
   1. [The JavaScript Style Guide Guide](#the-javascript-style-guide-guide)
   1. [Contributors](#contributors)
   1. [License](#license)
+
+## File Names
+
+```
+file-names-like-this.js
+template-names-like-this.html
+```
 
 ## Types
 
@@ -48,8 +59,8 @@
     + `undefined`
 
     ```javascript
-    var foo = 1,
-        bar = foo;
+    var foo = 1;
+    var bar = foo;
 
     bar = 9;
 
@@ -62,8 +73,8 @@
     + `function`
 
     ```javascript
-    var foo = [1, 2],
-        bar = foo;
+    var foo = [1, 2];
+    var bar = foo;
 
     bar[0] = 9;
 
@@ -149,9 +160,9 @@
   - When you need to copy an array use Array#slice. [jsPerf](http://jsperf.com/converting-arguments-to-an-array/7)
 
     ```javascript
-    var len = items.length,
-        itemsCopy = [],
-        i;
+    var len = items.length;
+    var itemsCopy = [];
+    var i;
 
     // bad
     for (i = 0; i < len; i++) {
@@ -214,10 +225,10 @@
   - When programmatically building up a string, use Array#join instead of string concatenation. Mostly for IE: [jsPerf](http://jsperf.com/string-vs-array-concat/2).
 
     ```javascript
-    var items,
-        messages,
-        length,
-        i;
+    var items;
+    var messages;
+    var length;
+    var i;
 
     messages = [{
       state: 'success',
@@ -364,40 +375,43 @@
     var superPower = new SuperPower();
     ```
 
-  - Use one `var` declaration for multiple variables and declare each variable on a newline.
+  - Use one `var` declaration for each variable and declare each variable on a newline. [Further reading](http://benalman.com/news/2012/05/multiple-var-statements-javascript/).
 
     ```javascript
     // bad
-    var items = getItems();
-    var goSportsTeam = true;
-    var dragonball = 'z';
-
-    // good
     var items = getItems(),
         goSportsTeam = true,
         dragonball = 'z';
+
+    // good
+    var items = getItems();
+    var goSportsTeam = true;
+    var dragonball = 'z';
     ```
 
   - Declare unassigned variables last. This is helpful when later on you might need to assign a variable depending on one of the previous assigned variables.
 
     ```javascript
     // bad
-    var i, len, dragonball,
-        items = getItems(),
-        goSportsTeam = true;
+    var i;
+    var len;
+    var dragonball;
+    var items = getItems();
+    var goSportsTeam = true;
 
     // bad
-    var i, items = getItems(),
-        dragonball,
-        goSportsTeam = true,
-        len;
+    var i;
+    var items = getItems();
+    var dragonball;
+    var goSportsTeam = true;
+    var len;
 
     // good
-    var items = getItems(),
-        goSportsTeam = true,
-        dragonball,
-        length,
-        i;
+    var items = getItems();
+    var goSportsTeam = true;
+    var dragonball;
+    var length;
+    var i;
     ```
 
   - Assign variables at the top of their scope. This helps avoid issues with variable declaration and assignment hoisting related issues.
@@ -628,39 +642,103 @@
 **[⬆ back to top](#table-of-contents)**
 
 
-## Comments
+## Comments - top level file and class comments
 
-  - Use `/** ... */` for multiline comments. Include a description, specify types and values for all parameters and return values.
+  - All files and classes should have JSDoc comments.
+
+    JSDoc can be parsed by a number of open source tools, and must be well-formed. 
+
+    Syntax:
 
     ```javascript
-    // bad
-    // make() returns a new element
-    // based on the passed in tag name
-    //
-    // @param <String> tag
-    // @return <Element> element
-    function make(tag) {
-
-      // ...stuff...
-
-      return element;
-    }
-
-    // good
     /**
-     * make() returns a new element
-     * based on the passed in tag name
-     *
-     * @param <String> tag
-     * @return <Element> element
+     * A JSDoc comment should begin with a slash and 2 asterisks.
      */
-    function make(tag) {
+    ```
 
-      // ...stuff...
+  - Top-level comments
 
-      return element;
+    The top level file comment is designed to orient readers unfamiliar with the code to what is in this file and any other disclaimers clients of the code should be given. It should provide a description of the file's contents and any dependencies or compatibility information. As an example:
+
+    coaches.js
+    ```javascript
+    /**
+     * Various components to handle management of lists of coaches for
+     * the profile page.
+     *
+     * These utilities were not written to be a general purpose utility
+     * for the entire code base, but has been optimized with the 
+     * assumption that the Profile namespace is fully loaded.
+     */
+    ```
+
+  - Class comments
+
+    Classes must be documented with a description, and appropriate type tags (see “Methods and properties” comments for more information on types on the constructor.
+
+    ```javascript
+    /**
+     * Class making something fun and easy.
+     *
+     * @param {string} arg1 An argument that makes this more interesting.
+     * @param {Array.<number>} arg2 List of numbers to be processed.
+     */
+    function SomeFunClass(arg1, arg2) {
+
+      // ...
+
     }
     ```
+**[⬆ back to top](#table-of-contents)**
+
+## Comments - method and property comments
+
+  - All non-trivial methods and properties should also have JSDoc comments.
+
+    Type annotations are strongly encouraged; if there is even a slight chance that the type will be ambiguous to future readers, put in a type annotation.
+
+    Type annotations are based on the ES4/JS2 type system, and are documented in the Google JavaScript style guide.
+
+    `@param` and `@return` type annotations that have comments that do not fit on one line wrap to the next line and indent 4 spaces.
+
+    Example:
+
+    ```javascript
+    /**
+     * A UI component allows users to select badges from their full list
+     * of earned badges, displaying them in a container.
+     * Expects a Badges.BadgeList as a model.
+     */
+    Badges.DisplayCase = Backbone.View.extend({
+      /**
+       * Whether or not this is currently in edit mode and the full
+       * badge list is visible.
+       */
+      editing: false,
+
+      /**
+       * The full user badge list available to pick from when in edit mode.
+       * @type {Badges.UserBadgeList}
+       */
+      fullBadgeList: null,
+
+      /**
+       * Enters "edit mode" where badges can be added/removed.
+       * @param {number=} index Optional index of the slot in the display-case
+       *     to be edited. Defaults to the first available slot, or if none
+       *     are available, the last used slot.
+       * @return {Badges.DisplayCase} This same instance so calls can be
+       *     chained.
+       */
+      edit: function(index) {
+      ...
+      },
+     ...
+    ```
+
+**[⬆ back to top](#table-of-contents)**
+
+## Comments - inline
 
   - Use `//` for single line comments. Place single line comments on a newline above the subject of the comment. Put an empty line before the comment.
 
@@ -841,16 +919,6 @@
 
     ```javascript
     // bad
-    var once
-      , upon
-      , aTime;
-
-    // good
-    var once,
-        upon,
-        aTime;
-
-    // bad
     var hero = {
         firstName: 'Bob'
       , lastName: 'Parr'
@@ -869,7 +937,7 @@
 
   - Additional trailing comma: **Nope.** This can cause problems with IE6/7 and IE9 if it's in quirksmode. Also, in some implementations of ES3 would add length to an array if it had an additional trailing comma. This was clarified in ES5 ([source](http://es5.github.io/#D)):
 
-  > Edition 5 clarifies the fact that a trailing comma at the end of an ArrayInitialiser does not add to the length of the array. This is not a semantic change from Edition 3 but some implementations may have previously misinterpreted this.
+    > Edition 5 clarifies the fact that a trailing comma at the end of an ArrayInitialiser does not add to the length of the array. This is not a semantic change from Edition 3 but some implementations may have previously misinterpreted this.
 
     ```javascript
     // bad
@@ -1468,6 +1536,9 @@
 
 **[⬆ back to top](#table-of-contents)**
 
+## Angular
+
+We will endeavour to [use these conventions](https://github.com/mgechev/angularjs-style-guide).
 
 ## ECMAScript 5 Compatibility
 
