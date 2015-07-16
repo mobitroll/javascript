@@ -646,7 +646,7 @@ template-names-like-this.html
 
   - All files and classes should have JSDoc comments.
 
-    JSDoc can be parsed by a number of open source tools, and must be well-formed. 
+    JSDoc can be parsed by a number of open source tools, and must be well-formed.
 
     Syntax:
 
@@ -667,7 +667,7 @@ template-names-like-this.html
      * the profile page.
      *
      * These utilities were not written to be a general purpose utility
-     * for the entire code base, but has been optimized with the 
+     * for the entire code base, but has been optimized with the
      * assumption that the Profile namespace is fully loaded.
      */
     ```
@@ -855,6 +855,21 @@ template-names-like-this.html
     // good
     var x = y + 5;
     ```
+
+  - Use spaces after the keywords `if`, `else`, `for`, `while`, `do`, `switch`, `try`, `catch`, `finally`, and `with`.
+
+    ```javascript
+    // bad
+    if(length === 5) {
+      //do something
+    }
+
+    // good
+    if (length === 5) {
+      //do something
+    }
+    ```
+
 
   - End files with a single newline character.
 
